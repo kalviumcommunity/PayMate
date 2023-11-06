@@ -106,3 +106,25 @@ WHERE employee_id = 3;
 
 DELETE FROM leave_record
 WHERE status = "pending" and employee_id = 3;
+
+--  milestone 4
+
+CREATE ROLE HR;
+CREATE ROLE Employee;
+CREATE ROLE DB_Admin;
+GRANT SELECT, INSERT, UPDATE, DELETE ON DBMS_Project.* TO HR;
+GRANT SELECT, INSERT, UPDATE, DELETE ON DBMS_Project.attendance_record TO Employee;
+GRANT SELECT, INSERT, UPDATE, DELETE ON DBMS_Project.leave_record TO Employee;
+GRANT SELECT ON DBMS_Project.* TO Employee;
+GRANT ALL PRIVILEGES ON DBMS_Project.* TO DB_Admin;
+CREATE USER 'HR_User'@'localhost' IDENTIFIED BY 'hr_password';
+
+CREATE USER 'Employee_User'@'localhost' IDENTIFIED BY 'employee_password';
+CREATE USER 'DB_Admin_User'@'localhost' IDENTIFIED BY 'db_admin_password';
+
+GRANT HR TO 'HR_User'@'localhost';
+GRANT Employee TO 'Employee_User'@'localhost';
+GRANT DB_Admin TO 'DB_Admin_User'@'localhost';
+SET DEFAULT ROLE HR TO 'HR_User'@'localhost';
+SET DEFAULT ROLE Employee TO 'Employee_User'@'localhost';
+SET DEFAULT ROLE DB_Admin TO 'DB_Admin_User'@'localhost';
