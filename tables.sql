@@ -128,3 +128,46 @@ GRANT DB_Admin TO 'DB_Admin_User'@'localhost';
 SET DEFAULT ROLE HR TO 'HR_User'@'localhost';
 SET DEFAULT ROLE Employee TO 'Employee_User'@'localhost';
 SET DEFAULT ROLE DB_Admin TO 'DB_Admin_User'@'localhost';
+
+
+-- Milestone 5 indexing and query optimization and Ad
+explain format=tree select * from employees where name="Tanishka Dadhich";
+CREATE INDEX Employee_name_index ON Employees(name);
+SHOW INDEXES FROM Employees;
+DROP INDEX Employee_name_index ON Employees;
+
+-- employees having salery more than the average salary
+SELECT employee_id, salary
+FROM payroll_information
+WHERE salary > (SELECT AVG(salary) FROM payroll_information);
+-- employee having the maximum salary
+SELECT employee_id, salary
+FROM payroll_information
+WHERE salary = (
+    SELECT MAX(salary)
+    FROM payroll_information
+);
+-- retriving employees detail with their roles
+SELECT Employees.employee_id, Employees.name, Employees.phone_number, Roles.role_name
+FROM Employees
+JOIN Roles ON Employees.role_id = Roles.role_id;
+
+-- employees who haven't checked out for today
+SELECT Employees.name
+FROM Employees
+JOIN attendance_record ON Employees.employee_id = attendance_record.employee_id
+WHERE DATE(attendance_record.check_in) = CURRENT_DATE AND attendance_record.check_out IS NULL;
+
+-- count number of employees in each roles
+SELECT Roles.role_name, COUNT(Employees.employee_id) AS num_employees
+FROM Roles
+LEFT JOIN Employees ON Roles.role_id = Employees.role_id
+GROUP BY Roles.role_name;
+
+-- Identify employees with the most leaves taken
+SELECT Employees.name, COUNT(leave_record.leave_request_id) AS num_leaves
+FROM Employees
+JOIN leave_record ON Employees.employee_id = leave_record.employee_id
+GROUP BY Employees.name
+ORDER BY num_leaves DESC
+LIMIT 1;
